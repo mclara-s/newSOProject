@@ -62,11 +62,15 @@ QList<Music> MusicLibrary::getAllMusicsList(){
 }
 
 QStringList MusicLibrary::allArtists(){
-    return QStringList(Artistas.keys());
+    QStringList artistas(Artistas.keys());
+    artistas.removeDuplicates();
+    return artistas;
 }
 
 QStringList MusicLibrary::allAlbuns(){
-    return QStringList(Albuns.keys());
+    QStringList albuns(Albuns.keys());
+    albuns.removeDuplicates();
+    return albuns;
 }
 
 QStringList MusicLibrary::allMusics(){

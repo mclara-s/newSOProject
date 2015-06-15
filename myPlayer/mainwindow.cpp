@@ -16,10 +16,15 @@ MainWindow::MainWindow(QWidget *parent) :
 
     model = new QStandardItemModel();
     QStringList headers;
-    headers << tr("Arquivo") << tr("Titulo") << tr("Artista") << tr("Album") << tr("Duração");
+    headers << tr("Titulo") << tr("Artista") << tr("Album") << tr("Duração");
     model->setHorizontalHeaderLabels(headers);
     ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
     ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
+    categoryModel = new QStandardItemModel();
+    categoryModel->setHorizontalHeaderLabels(headers);
+    ui->categoryContent->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->categoryContent->setEditTriggers(QAbstractItemView::NoEditTriggers);
 
     setLibrary();
 
@@ -52,7 +57,6 @@ void MainWindow::setLibrary(){
     for (int i = 0; i < allSongs.count(); i++){
         //QHash<QString, QString> hash = myLib->getMusicInfo(i);
         listaItem.clear();
-        listaItem << new QStandardItem(allSongs[i].getFileName());
         listaItem << new QStandardItem(allSongs[i].getTitle());
         listaItem << new QStandardItem(allSongs[i].getArtist());
         listaItem << new QStandardItem(allSongs[i].getAlbum());
@@ -196,7 +200,6 @@ void MainWindow::on_lineEdit_returnPressed()
     for (int i = 0; i < allSongs.count(); i++){
         //QHash<QString, QString> hash = myLib->getMusicInfo(i);
         listaItem.clear();
-        listaItem << new QStandardItem(allSongs[i].getFileName());
         listaItem << new QStandardItem(allSongs[i].getTitle());
         listaItem << new QStandardItem(allSongs[i].getArtist());
         listaItem << new QStandardItem(allSongs[i].getAlbum());
@@ -222,4 +225,43 @@ void MainWindow::on_NovaPlaylist_clicked()
             model->setHorizontalHeaderLabels(headers);
             ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
             ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);*/
+}
+
+void MainWindow::on_artistSort_clicked()
+{
+    ui->keyTitle->setText("Artistas");
+    ui->keyCategories->clear();
+    ui->keyCategories->addItems(myLib->allArtists());
+    ui->categoryContent->setModel(categoryModel);
+}
+
+void MainWindow::on_albunsSort_clicked()
+{
+    ui->keyTitle->setText("Albuns");
+    ui->keyCategories->clear();
+    ui->keyCategories->addItems(myLib->allAlbuns());
+    ui->categoryContent->setModel(categoryModel);
+}
+
+void MainWindow::on_keyCategories_itemClicked(QListWidgetItem *item)
+{
+    QString name = item->text();
+    QList<Music> allSongs = myLib->findMusics(name);
+
+    categoryModel->clear();
+    QStringList headers;
+    headers << tr("Titulo") << tr("Artista") << tr("Album") << tr("Duração");
+    categoryModel->setHorizontalHeaderLabels(headers);
+
+    for (int i = 0; i < allSongs.count(); i++){
+        listaItem.clear();
+        listaItem << new QStandardItem(allSongs[i].getTitle());
+        listaItem << new QStandardItem(allSongs[i].getArtist());
+        listaItem << new QStandardItem(allSongs[i].getAlbum());
+        listaItem << new QStandardItem(allSongs[i].getDuration());
+        categoryModel->appendRow(listaItem);
+    }
+    ui->categoryContent->setModel(categoryModel);
+    ui->categoryContent->setShowGrid(false);
+    ui->categoryContent->verticalHeader()->setVisible(false);
 }

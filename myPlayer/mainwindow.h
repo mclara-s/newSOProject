@@ -9,6 +9,7 @@
 #include "music.h"
 #include <QSplitter>
 #include "dialog.h"
+#include <QListWidgetItem>
 
 
 namespace Ui {
@@ -57,13 +58,19 @@ private slots:
 
     void on_NovaPlaylist_clicked();
 
+    void on_artistSort_clicked();
+
+    void on_albunsSort_clicked();
+
+    void on_keyCategories_itemClicked(QListWidgetItem *item);
+
 private:
     Ui::MainWindow *ui;
     QMediaPlayer *player;
     QMediaPlaylist *nowPlaying;
     QString directory;
     MusicLibrary *myLib;
-    QStandardItemModel *model;
+    QStandardItemModel *model, *categoryModel;
     QList<QStandardItem *> listaItem;
 
 };
