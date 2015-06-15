@@ -1,0 +1,4 @@
+/home/maria/Downloads/taglib-1.9.1/build/taglib/CMakeFiles/tag.dir
+/home/maria/Downloads/taglib-1.9.1/build/CMakeFiles/uninstall.dir
+/home/maria/Downloads/taglib-1.9.1/build/CMakeFiles/docs.dir
+/home/maria/Downloads/taglib-1.9.1/build/bindings/c/CMakeFiles/tag_c.dir

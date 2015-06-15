@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 
 MainWindow::MainWindow(QWidget *parent) :
@@ -13,13 +13,17 @@ MainWindow::MainWindow(QWidget *parent) :
     player->setPlaylist(nowPlaying);
     player->setVolume(70);
     nowPlaying->setCurrentIndex(0);
+
+    model = new QStandardItemModel();
+    QStringList headers;
+    headers << tr("Arquivo") << tr("Titulo") << tr("Artista") << tr("Album") << tr("Duração");
+    model->setHorizontalHeaderLabels(headers);
+    ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+    ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);
+
     setLibrary();
 
-  /*  model = new QStandardItemModel();
-    QStringList headers;
-    headers << "Arquivo" << "Titulo" << "Artista" << "Album" << "Duração";
-    model->setHorizontalHeaderLabels(headers);
-*/
+
     connect(player, &QMediaPlayer::positionChanged, this, &MainWindow::on_positionChanged);
     connect(player, &QMediaPlayer::durationChanged, this, &MainWindow::on_durationChanged);
     connect(player, &QMediaPlayer::mediaStatusChanged, this, &MainWindow::setCurrentData);
@@ -32,17 +36,39 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+void MainWindow::addToLibrary(){
+    directory = QFileDialog::getExistingDirectory(this,tr("Select dir for files to import"));
+    myLib->addFromDirectory(directory);
+    setLibrary();
+}
+
+
 void MainWindow::setLibrary(){
-    if (myLib->mediaCount() == 0){
-        directory = QFileDialog::getExistingDirectory(this,tr("Select dir for files to import"));
-        myLib->setContent(directory);
+    if (myLib->mediaCount() == 0)
+        addToLibrary();
+
+    QList<Music> allSongs = myLib->getAllMusicsList();
+    model->clear();
+    for (int i = 0; i < allSongs.count(); i++){
+        //QHash<QString, QString> hash = myLib->getMusicInfo(i);
+        listaItem.clear();
+        listaItem << new QStandardItem(allSongs[i].getFileName());
+        listaItem << new QStandardItem(allSongs[i].getTitle());
+        listaItem << new QStandardItem(allSongs[i].getArtist());
+        listaItem << new QStandardItem(allSongs[i].getAlbum());
+        listaItem << new QStandardItem(allSongs[i].getDuration());
+        model->appendRow(listaItem);
     }
-    QHash<QString, QString> hash = myLib->getMusicInfo(0);
-    //ui->listWidget->addItem(hash.value("Filename"));
-    ui->listWidget->addItems(myLib->getFilenames());
-    nowPlaying->addMedia(myLib->getContentMedia());
-    ui->listWidget->setCurrentRow(nowPlaying->currentIndex() != -1? nowPlaying->currentIndex():0);
     ui->tableView->setModel(model);
+    ui->tableView->setShowGrid(false);
+    ui->tableView->verticalHeader()->setVisible(false);
+    //ui->tableView->setSortingEnabled(true);
+    //ui->tableView->sortByColumn(4, Qt::AscendingOrder);
+
+    /*ui->listWidget->addItems(myLib->getFilenames());
+    nowPlaying->addMedia(myLib->getContentMedia());
+    ui->listWidget->setCurrentRow(nowPlaying->currentIndex() != -1? nowPlaying->currentIndex():0);*/
+
 }
 
 void MainWindow::on_sliderProgress_sliderMoved(int position)
@@ -148,4 +174,52 @@ void MainWindow::on_listWidget_doubleClicked(const QModelIndex &index)
     nowPlaying->setCurrentIndex(index.row());
     player->play();
     ui->playPause->setText("Pause");
+}
+
+void MainWindow::on_tableView_doubleClicked(const QModelIndex &index)
+{
+    QString name = ui->tableView->model()->data(ui->tableView->model()->index(index.row(),1)).toString();
+    ui->listWidget->clear();
+    nowPlaying->clear();
+    nowPlaying->addMedia(myLib->getMusic(name).getMediaContent());
+    ui->listWidget->addItem(myLib->getMusic(name).getFileName());
+    player->play();
+    ui->playPause->setText("Pause");
+}
+
+void MainWindow::on_lineEdit_returnPressed()
+{
+    QString name = ui->lineEdit->text();
+
+    QList<Music> allSongs = myLib->findMusics(name);
+    model->clear();
+    for (int i = 0; i < allSongs.count(); i++){
+        //QHash<QString, QString> hash = myLib->getMusicInfo(i);
+        listaItem.clear();
+        listaItem << new QStandardItem(allSongs[i].getFileName());
+        listaItem << new QStandardItem(allSongs[i].getTitle());
+        listaItem << new QStandardItem(allSongs[i].getArtist());
+        listaItem << new QStandardItem(allSongs[i].getAlbum());
+        listaItem << new QStandardItem(allSongs[i].getDuration());
+        model->appendRow(listaItem);
+    }
+    ui->tableView->setModel(model);
+    ui->tableView->setShowGrid(false);
+    ui->tableView->verticalHeader()->setVisible(false);
+}
+
+void MainWindow::on_pushButton_clicked()
+{
+    addToLibrary();
+}
+
+void MainWindow::on_NovaPlaylist_clicked()
+{
+    /*Dialog newDialog;
+            modelD = new QStandardItemModel();
+            QStringList headers;
+            headers << tr("Arquivo") << tr("Titulo") << tr("Artista") << tr("Album") << tr("Duração");
+            model->setHorizontalHeaderLabels(headers);
+            ui->tableView->setSelectionBehavior(QAbstractItemView::SelectRows);
+            ui->tableView->setEditTriggers(QAbstractItemView::NoEditTriggers);*/
 }

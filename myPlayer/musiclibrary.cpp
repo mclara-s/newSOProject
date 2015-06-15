@@ -3,63 +3,72 @@
 MusicLibrary::MusicLibrary()
 {
     load(QUrl::fromLocalFile("MyLibrary.m3u"), "m3u");
-    if (mediaCount() != 0){
-        setContentList();
-        setMusicList();
-    }
+    if(mediaCount() != 0)
+        setCategories();
 }
 
-MusicLibrary::~MusicLibrary()
-{
+MusicLibrary::~MusicLibrary(){
 
 }
 
-void MusicLibrary::setContentList(){
-    for (int i = 0; i < mediaCount(); i++)
-            contentList << media(i);
-}
-
-void MusicLibrary::setMusicList(){
-    Music musica;
+void MusicLibrary::setCategories(){
+    Music music;
     for (int i = 0; i < mediaCount(); i++){
-        musica.setMediaContent(media(i));
-        musicList << musica;
-        fileNames << musica.getFileName();
+        music.setMediaContent(media(i));
+        MediaContentList << media(i);
+        AllMusicsList << music;
+        Artistas.insertMulti(music.getArtist(), music);
+        Albuns.insertMulti(music.getAlbum(), music);
+        MusicTitles.insertMulti(music.getTitle(), music);
     }
 }
 
-void MusicLibrary::setContent(QString directory){
+void MusicLibrary::addFromDirectory(QString directory){
     if(directory.isEmpty())
             return;
 
     QDir dir(directory);
     QStringList files = dir.entryList(QStringList() << "*.mp3",QDir::Files);
-    QString f;
+    Music music;
     for(int i = 0; i < files.size(); i++)
     {
-        f = files.at(i);
-        contentList.push_back(QUrl::fromLocalFile(dir.path()+"/" + f));
+        music.setMediaContent(QUrl::fromLocalFile(dir.path()+"/" + files.at(i)));
+        MediaContentList << music.getMediaContent();
+        AllMusicsList << music;
+        Artistas.insertMulti(music.getArtist(), music);
+        Albuns.insertMulti(music.getAlbum(), music);
+        MusicTitles.insertMulti(music.getTitle(), music);
     }
-    addMedia(contentList);
-    setMusicList();
+    addMedia(MediaContentList);
     save(QUrl::fromLocalFile("MyLibrary.m3u"), "m3u");
 }
 
-QHash<QString,QString> MusicLibrary::getMusicInfo(int i){
-    QHash<QString, QString> musicInfo;
-    musicInfo.insert("Artista", musicList[i].getArtist());
-    musicInfo.insert("Titulo", musicList[i].getTitle());
-    musicInfo.insert("Album", musicList[i].getAlbum());
-    musicInfo.insert("Duration", musicList[i].getDuration());
-    musicInfo.insert("Filename", musicList[i].getFileName());
-    
-    return musicInfo;    
+QList<Music> MusicLibrary::findMusics(QString key){
+    QList<Music> results;
+    results.append(Artistas.values(key));
+    results.append(MusicTitles.values(key));
+    results.append(Albuns.values(key));
+    qDebug() << Artistas.values(key).count();
+    return results;
+
 }
 
-QList<QMediaContent> MusicLibrary::getContentMedia(){
-    return contentList;
+Music MusicLibrary::getMusic(QString title){
+    return MusicTitles.value(title);
 }
 
-QStringList MusicLibrary::getFilenames(){
-    return fileNames;
+QList<Music> MusicLibrary::getAllMusicsList(){
+    return AllMusicsList;
+}
+
+QStringList MusicLibrary::allArtists(){
+    return QStringList(Artistas.keys());
+}
+
+QStringList MusicLibrary::allAlbuns(){
+    return QStringList(Albuns.keys());
+}
+
+QStringList MusicLibrary::allMusics(){
+    return QStringList(MusicTitles.keys());
 }

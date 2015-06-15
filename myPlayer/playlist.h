@@ -6,7 +6,9 @@
 class Playlist : public QMediaPlaylist
 {
     QString Name;
-    QList<Music> musicList;
+    QHash<QString, Music > MusicTitles;
+    QList<Music> AllMusicsList;
+    QList<QMediaContent> contentList;
 
 public:
     Playlist();
@@ -15,7 +17,10 @@ public:
 
     void setName(QString);
     void addMusic(Music);
-    QHash<QString, QString> getMusicInfo(int);
+    bool hasMusic(QString);
+    Music getMusic(QString);
+    QList<Music> getAllMusicsList();
+    QList<QMediaContent> getContentList();
 };
 
 #endif // PLAYLIST_H

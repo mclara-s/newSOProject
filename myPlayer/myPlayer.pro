@@ -16,25 +16,28 @@ SOURCES += main.cpp\
         mainwindow.cpp \
     musiclibrary.cpp \
     music.cpp \
-    playlist.cpp
+    playlist.cpp \
+    dialog.cpp
 
 HEADERS  += mainwindow.h \
     musiclibrary.h \
     music.h \
-    playlist.h
+    playlist.h \
+    dialog.h
 
-FORMS    += mainwindow.ui
+FORMS    += mainwindow.ui \
+    dialog.ui
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../Downloads/taglib-1.9.1/build/taglib/release/ -ltag
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../Downloads/taglib-1.9.1/build/taglib/debug/ -ltag
-else:unix: LIBS += -L$$PWD/../../../Downloads/taglib-1.9.1/build/taglib/ -ltag
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/build/taglib/release/ -ltag
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/build/taglib/debug/ -ltag
+else:unix: LIBS += -L$$PWD/build/taglib/ -ltag
 
-INCLUDEPATH += $$PWD/../../../Downloads/taglib-1.9.1/build/taglib
-DEPENDPATH += $$PWD/../../../Downloads/taglib-1.9.1/build/taglib
+INCLUDEPATH += $$PWD/build/taglib
+DEPENDPATH += $$PWD/build/taglib
 
-win32:CONFIG(release, debug|release): LIBS += -L$$PWD/../../../Downloads/taglib-1.9.1/build/bindings/c/release/ -ltag_c
-else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/../../../Downloads/taglib-1.9.1/build/bindings/c/debug/ -ltag_c
-else:unix: LIBS += -L$$PWD/../../../Downloads/taglib-1.9.1/build/bindings/c/ -ltag_c
+win32:CONFIG(release, debug|release): LIBS += -L$$PWD/build/bindings/c/release/ -ltag_c
+else:win32:CONFIG(debug, debug|release): LIBS += -L$$PWD/build/bindings/c/debug/ -ltag_c
+else:unix: LIBS += -L$$PWD/build/bindings/c/ -ltag_c
 
-INCLUDEPATH += $$PWD/../../../Downloads/taglib-1.9.1/build/bindings/c
-DEPENDPATH += $$PWD/../../../Downloads/taglib-1.9.1/build/bindings/c
+INCLUDEPATH += $$PWD/build/bindings/c
+DEPENDPATH += $$PWD/build/bindings/c

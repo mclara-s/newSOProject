@@ -21,15 +21,26 @@ void Playlist::setName(QString nome){
 
 void Playlist::addMusic(Music musica){
     addMedia(musica.getMediaContent());
-    musicList << musica;
+    AllMusicsList << musica;
+    contentList << musica.getMediaContent();
+    MusicTitles.insert(musica.getTitle(), musica);
 }
 
-QHash<QString, QString> Playlist::getMusicInfo(int i){
-    QHash<QString, QString> musicInfo;
-    musicInfo.insert("Artista", musicList[i].getArtist());
-    musicInfo.insert("Titulo", musicList[i].getTitle());
-    musicInfo.insert("Album", musicList[i].getAlbum());
-    musicInfo.insert("Duration", musicList[i].getDuration());
+bool Playlist::hasMusic(QString title){
+    if (MusicTitles.contains(title))
+        return true;
+    else
+        return false;
+}
 
-    return musicInfo;
+Music Playlist::getMusic(QString title){
+    return MusicTitles.value(title);
+}
+
+QList<Music> Playlist::getAllMusicsList(){
+    return AllMusicsList;
+}
+
+QList<QMediaContent> Playlist::getContentList(){
+    return contentList;
 }

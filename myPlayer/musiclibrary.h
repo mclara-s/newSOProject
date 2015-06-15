@@ -5,23 +5,30 @@
 #include <QMediaPlaylist>
 #include <QDir>
 #include "music.h"
+#include "playlist.h"
+//#include "dialog.h"
 
 class MusicLibrary: public QMediaPlaylist
 {
-    QList<QMediaContent> contentList;
-    QList<Music> musicList;
-    QStringList fileNames;
+    QList<QMediaContent> MediaContentList;
+    QHash<QString, Music > Artistas;
+    QHash<QString, Music > Albuns;
+    QHash<QString, Music > MusicTitles;
+    QList<Music> AllMusicsList;
+    void setCategories();
 
 public:
     MusicLibrary();
     ~MusicLibrary();
 
-    void setContentList();
-    void setMusicList();
-    void setContent(QString);
-    QStringList getFilenames();
-    QHash<QString,QString> getMusicInfo(int);
-    QList<QMediaContent> getContentMedia();
+    void addFromDirectory(QString);
+    QList<Music> findMusics(QString);
+    Music getMusic(QString);
+    QList<Music> getAllMusicsList();
+    QStringList allArtists();
+    QStringList allAlbuns();
+    QStringList allMusics();
+
 };
 
 
